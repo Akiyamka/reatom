@@ -59,8 +59,8 @@ export function createPrimitiveAtom<State>(
     change: (state: State, payload: (state: State) => State): State =>
       payload(state),
   }
-
-  let { decorators = [], id } = isString(options)
+  
+  let { decorators = [], store, id } = isString(options)
     ? ({ id: options } as Exclude<AtomOptions<State>, string>)
     : options
 
@@ -91,15 +91,15 @@ export function createPrimitiveAtom<State>(
 
   const keys = Object.keys(actions!)
 
-  const atom = createAtom(
+ const atom = createAtom(
     keys.reduce(
       (acc, key) => ((acc[key] = (...payload) => payload), acc),
       {} as Rec<Fn>,
     ),
-
+    
     noop,
-
-    { decorators, id },
+    
+    { decorators, store, id },
   )
 
   const actionCreatorsTypes = keys.map((key) => atom[key].type)
